@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 file="/Users/azeman/Desktop/Study UCD/Final Project UCDPA/Olympics archive/athlete_events.csv"
 olympics_data=pd.read_csv(file, sep=',', comment='#')
 
@@ -26,10 +27,13 @@ olympics_data.isna().sum().plot(kind='bar')
 plt.show()
 
 #we can see we have missing values in Age, Height, Weight and Medal. Need to clean these if we are going to use them
+#Group by sport and get mean of weight. Look into groupby.
 
-
+#The 'Games' column is just the 'Year' and 'Season' column combined
+olympics_data.drop["Games"]
+print (new_olympics_data.head)
+print(new_olympics_data.columns)
 
 #I found a way to mark the 18th row, and by going into the debugger, check how to see the code as a dataframe//
-#there we found that the row
-committing this
+#there we found that the columns
 #here is some more text, lets check it is pushed
