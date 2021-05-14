@@ -13,6 +13,7 @@ regions_NOC=pd.read_csv('/Users/azeman/Desktop/Study UCD/Final Project UCDPA/Oly
 #first we want to know the shape of the first data set: it shows 271116 rows and 15 columns
 print ('the Shape and Columns of the Olympics data-set are')
 print(olympics_data.shape)
+print ('the Shape and Columns of the Olympics data-set are' + str(olympics_data.shape))
 
 #next we want to know what the columns entail
 print(olympics_data.columns)
@@ -71,6 +72,8 @@ mean_weight=total_data["Weight"].mean()
 print ('the mean weight is')
 print (mean_weight)
 
+
+
 #then we fill the mean weight in the Weight column for the values that are null
 total_data["Weight"]=total_data["Weight"].fillna(mean_weight)
 total_data["Weight"]
@@ -82,6 +85,8 @@ print (total_data.isnull().sum())
 print(total_data.isna().any())
 total_data.isna().sum().plot(kind='bar')
 plt.show()
+
+
 
 #We now want to change the NaN values in the Medals column to Losers
 total_data['Medal'] = total_data['Medal'].fillna('Losers')
@@ -103,7 +108,7 @@ print (data_gender.head())
 #plt.show()
 
 
-#Now we are going to see how many medals the Netherlands won in each Games
+#Now we are going to see how many participants the Netherlands had in each Games
 Netherlands_edition_grouped = total_data.loc[total_data.NOC == 'NED'].groupby('Games')
 print (Netherlands_edition_grouped['Medal'].count().head())
 
@@ -114,20 +119,50 @@ plt.title('Amount of Medals won by the Netherlands per Edition')
 plt.show()
 
 
+#Now we are going to see how many medals the Netherlands won in each Games
+Netherlands_edition_grouped_medals = olympics_data.loc[olympics_data.NOC == 'NED'].groupby('Games')
+print (Netherlands_edition_grouped_medals['Medal'].count().head())
 
-
-
-
-
-
-
-
-
-
-
-
-total_data.plot("Year", "Team")
+Netherlands_edition_grouped_medals['Medal'].count().plot(kind='bar')
+plt.xlabel('Games')
+plt.ylabel('Amount of medals')
+plt.title('Amount of Medals won by the Netherlands per Edition')
 plt.show()
+
+
+
+#Changing to numpy array
+
+np_height = total_data['Height'].to_numpy()
+print(type(np_height))
+print(np.mean(np_height))
+print (np.median(np_height))
+avg = np.mean(np_height)
+print("Average: " + str(avg))
+med = np.median(np_height)
+print("Median: " + str(med))
+
+
+
+np_weight = total_data['Weight'].to_numpy()
+print(type(np_weight))
+print(np.mean(np_weight))
+print (np.median(np_weight))
+avg = np.mean(np_weight)
+print("Average: " + str(avg))
+med = np.median(np_weight)
+print("Median: " + str(med))
+
+#we're gonna creat the function BMI
+#np_height = np.array(height)
+#np_weight = np.array(weight)
+
+bmi = np_weight / np_height ** 2
+print (bmi)
+
+
+#total_data.plot("Year", "Team")
+#plt.show()
 
 
 ##The 'Games' column is just the 'Year' and 'Season' column combined
