@@ -38,6 +38,16 @@ print ('total_data')
 print(total_data.columns)
 print ('total_data end of columns')
 
+#making a function
+print ('trying new code out')
+def NaN_percent(total_data, column_name):
+    row_count = total_data[column_name].shape[0]
+    empty_values = row_count - total_data[column_name].count()
+    return (100.0*empty_values)/row_count
+for i in list(total_data):
+    print(i +': ' + str(NaN_percent(total_data,i))+'%')
+print ('en of trying new code out')
+
 #we'd like an overview of missing values and show it in a bar-graph
 print (total_data.isna().any())
 total_data.isna().sum().plot(kind='bar')
@@ -56,6 +66,9 @@ total_data["Age"]
 
 #We check the values, see if the change is made
 print (total_data.isnull().sum())
+
+print (str('Age columns') + NaN_percent(total_data, "Age"))
+print('previous defined function')
 
 #we do the same for the 'Height'
 mean_height=total_data["Height"].mean()
