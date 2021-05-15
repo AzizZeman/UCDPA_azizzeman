@@ -11,9 +11,7 @@ olympics_data=pd.read_csv(file, sep=',', comment='#')
 regions_NOC=pd.read_csv('/Users/azeman/Desktop/Study UCD/Final Project UCDPA/Olympics archive/noc_regions.csv')
 
 #first we want to know the shape of the first data set: it shows 271116 rows and 15 columns
-print ('the Shape and Columns of the Olympics data-set are')
-print(olympics_data.shape)
-print ('the Shape and Columns of the Olympics data-set are' + str(olympics_data.shape))
+print(('the Shape of the Olympics data-set is'), olympics_data.shape)
 
 #next we want to know what the columns entail
 print(olympics_data.columns)
@@ -23,12 +21,10 @@ print(olympics_data.info)
 print(olympics_data.head(10))
 
 #we check how many unique ID there are: 135571
-print ("amount of unqiue ID's")
-print (len(olympics_data.ID.unique()))
+print (("amount of unqiue athletes participating in the olympics is;"), len(olympics_data.ID.unique()))
 
 #Next we check the data of the second data set; 230 rows x 3 columns, Index(['NOC', 'region', 'notes']
-print ('the Shape, Head and Columns of the regions NOC dataset')
-print (regions_NOC.shape)
+print (('the Shape of the regions NOC dataset is'), regions_NOC.shape)
 print(regions_NOC.head)
 print(regions_NOC.columns)
 
@@ -37,6 +33,16 @@ total_data = pd.merge(olympics_data, regions_NOC, left_on='NOC', right_on='NOC')
 print ('total_data')
 print(total_data.columns)
 print ('total_data end of columns')
+
+#making a function to measure the percentage of NaN values
+print ('trying new code out')
+def NaN_percent(total_data, column_name):
+    rows_count = total_data[column_name].shape[0]
+    empty_values = rows_count - total_data[column_name].count()
+    return (100.0*empty_values)/rows_count
+for i in list(total_data):
+    print(i +': ' + str(NaN_percent(total_data,i))+'%')
+print ('en of trying new code out')
 
 #we'd like an overview of missing values and show it in a bar-graph
 print (total_data.isna().any())
@@ -56,6 +62,7 @@ total_data["Age"]
 
 #We check the values, see if the change is made
 print (total_data.isnull().sum())
+
 
 #we do the same for the 'Height'
 mean_height=total_data["Height"].mean()
@@ -112,10 +119,10 @@ print (data_gender.head())
 Netherlands_edition_grouped = total_data.loc[total_data.NOC == 'NED'].groupby('Games')
 print (Netherlands_edition_grouped['Medal'].count().head())
 
-Netherlands_edition_grouped['Medal'].count().plot(kind='bar')
+Netherlands_edition_grouped['Medal'].count().plot(kind='bar', rot=45)
 plt.xlabel('Games')
 plt.ylabel('Amount of medals')
-plt.title('Amount of Medals won by the Netherlands per Edition')
+plt.title('Amount of participants by the Netherlands per Edition')
 plt.show()
 
 
@@ -123,11 +130,28 @@ plt.show()
 Netherlands_edition_grouped_medals = olympics_data.loc[olympics_data.NOC == 'NED'].groupby('Games')
 print (Netherlands_edition_grouped_medals['Medal'].count().head())
 
-Netherlands_edition_grouped_medals['Medal'].count().plot(kind='bar')
+Netherlands_edition_grouped_medals['Medal'].count().plot(kind='bar', rot= 45)
 plt.xlabel('Games')
-plt.ylabel('Amount of medals')
+plt.ylabel('Amount of participants')
 plt.title('Amount of Medals won by the Netherlands per Edition')
 plt.show()
+
+
+#We now want to see how many participants there were per edition
+IDgroupedbyyear = total_data.groupby(['Year','ID'],as_index=False).count()[['Year','ID']]
+IDgroupedbyyear = IDgroupedbyyear.groupby('Year',as_index=False).count()
+IDgroupedbyyear.head()
+
+#Now let's get the sum
+IDgroupedbyyear = IDgroupedbyyear.groupby('Year',as_index=False).sum()
+
+sns.set(rc={'figure.figsize':(18,12)})
+plot1 = sns.barplot('Year','ID',data=IDgroupedbyyear).set_xticklabels(IDgroupedbyyear.Year,rotation=45)
+#plot1.set(xlabel='YEAR',ylabel='Number of people')
+plt.xlabel("YEAR")
+plt.ylabel("PARTICIPANTS")
+plt.show()
+
 
 
 
