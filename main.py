@@ -36,12 +36,12 @@ print ('total_data end of columns')
 
 #making a function to measure the percentage of NaN values
 print ('trying new code out')
-def NaN_percent(total_data, column_name):
+def None_as_percentage(total_data, column_name):
     rows_count = total_data[column_name].shape[0]
     empty_values = rows_count - total_data[column_name].count()
     return (100.0*empty_values)/rows_count
 for i in list(total_data):
-    print(i +': ' + str(NaN_percent(total_data,i))+'%')
+    print(i +': ' + str(None_as_percentage(total_data,i))+'%')
 print ('en of trying new code out')
 
 #we'd like an overview of missing values and show it in a bar-graph
@@ -108,11 +108,19 @@ print (total_data.head)
 print(total_data.columns)
 print (type(total_data))
 
+
 #We go on to grouping by Sex
 data_gender=total_data['Sex'].value_counts()
 print (data_gender.head())
 #data_gender.sum().plot(kind='bar')
 #plt.show()
+
+sns.catplot(x=total_data['Sex'], data=data_gender, kind="count")
+plt.xlabel("Male and Female participation")
+plt.ylabel("Participants")
+plt.show()
+
+
 
 
 #Now we are going to see how many participants the Netherlands had in each Games
@@ -121,7 +129,7 @@ print (Netherlands_edition_grouped['Medal'].count().head())
 
 Netherlands_edition_grouped['Medal'].count().plot(kind='bar', rot=45)
 plt.xlabel('Games')
-plt.ylabel('Amount of medals')
+plt.ylabel('Amount of participants')
 plt.title('Amount of participants by the Netherlands per Edition')
 plt.show()
 
@@ -145,7 +153,13 @@ IDgroupedbyyear.head()
 #Now let's get the sum
 IDgroupedbyyear = IDgroupedbyyear.groupby('Year',as_index=False).sum()
 
-sns.set(rc={'figure.figsize':(18,12)})
+sns.catplot(x="Year", y="ID",
+            data=IDgroupedbyyear, kind="bar")
+plt.xticks(rotation=45)
+plt.show()
+
+
+#sns.set(rc={'figure.figsize':(18,12)})
 plot1 = sns.barplot('Year','ID',data=IDgroupedbyyear).set_xticklabels(IDgroupedbyyear.Year,rotation=45)
 #plot1.set(xlabel='YEAR',ylabel='Number of people')
 plt.xlabel("YEAR")
@@ -183,6 +197,27 @@ print("Median: " + str(med))
 
 bmi = np_weight / np_height ** 2
 print (bmi)
+
+
+
+
+#Using .nunique() to rank by distinct sports
+# Group medals by 'NOC': country_grouped
+countries = total_data.groupby('NOC')
+
+# Compute the number of distinct sports in which each country won medals: Nsports
+Newsports = countries['Sport'].nunique()
+
+# Sort the values of Nsports in descending order
+Newsports = Newsports.sort_values(ascending=False)
+
+# Print the top 15 rows of Nsports
+print(Newsports.head(15))
+
+sns.catplot(x=total_data.groupby('NOC'), data=Newsports, kind="count")
+plt.xlabel("Countries")
+plt.ylabel("Amount of sports won medals in")
+plt.show()
 
 
 #total_data.plot("Year", "Team")
