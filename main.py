@@ -1,8 +1,11 @@
 import os
+from typing import Any, Union
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pandas import DataFrame, Series
 
 file="/Users/azeman/Desktop/Study UCD/Final Project UCDPA/Olympics archive/athlete_events.csv"
 olympics_data=pd.read_csv(file, sep=',', comment='#')
@@ -30,12 +33,25 @@ print(regions_NOC.columns)
 
 #we can now merge the 2 datasets into total_data
 total_data = pd.merge(olympics_data, regions_NOC, left_on='NOC', right_on='NOC')
-print ('total_data')
 print(total_data.columns)
-print ('total_data end of columns')
+
+
+#First I wanted to check the amount of duplicate values in the dataset. There are 1385 rows in total that are duplicates.
+duplicate_rows = total_data[total_data.duplicated()]
+print(duplicate_rows)
+print (duplicate_rows.shape)
+
+#Next we want to drop the duplicates, and make sure the duplicates are indeed dropped.
+total_data.drop_duplicates(inplace=True)
+
+duplicate_rows2 = total_data[total_data.duplicated()]
+print (duplicate_rows2)
+print (duplicate_rows2.shape)
+
+
+
 
 #making a function to measure the percentage of NaN values
-print ('trying new code out')
 def None_as_percentage(total_data, column_name):
     rows_count = total_data[column_name].shape[0]
     empty_values = rows_count - total_data[column_name].count()
@@ -53,16 +69,16 @@ plt.show()
 #We can see we have missing values in Age, Height, Weight and Medal. Need to clean these if we are going to use them
 #First we calculate the mean age
 mean_age=total_data["Age"].mean()
-print ('the mean age is')
-print (mean_age)
+print (('the mean age is:'), mean_age)
+median_age=total_data["Age"].median()
+print (('the median age is:'), median_age)
 
 #then we fill the mean age in the Age column for the values that are null
-total_data["Age"]=total_data["Age"].fillna(mean_age)
-total_data["Age"]
+total_data["Age"]=total_data["Age"].fillna(median_age)
 
 #We check the values, see if the change is made
 print (total_data.isnull().sum())
-
+print (None_as_percentage(total_data, ["Age"]))
 
 #we do the same for the 'Height'
 mean_height=total_data["Height"].mean()
@@ -109,6 +125,11 @@ print(total_data.columns)
 print (type(total_data))
 
 
+
+
+
+
+
 #We go on to grouping by Sex
 data_gender=total_data['Sex'].value_counts()
 print (data_gender.head())
@@ -123,11 +144,14 @@ plt.show()
 
 
 
+
+
+
 #Now we are going to see how many participants the Netherlands had in each Games
 Netherlands_edition_grouped = total_data.loc[total_data.NOC == 'NED'].groupby('Games')
-print (Netherlands_edition_grouped['Medal'].count().head())
+print (Netherlands_edition_grouped['ID'].count().head())
 
-Netherlands_edition_grouped['Medal'].count().plot(kind='bar', rot=45)
+Netherlands_edition_grouped['ID'].count().plot(kind='bar', rot=45)
 plt.xlabel('Games')
 plt.ylabel('Amount of participants')
 plt.title('Amount of participants by the Netherlands per Edition')
@@ -143,6 +167,11 @@ plt.xlabel('Games')
 plt.ylabel('Amount of participants')
 plt.title('Amount of Medals won by the Netherlands per Edition')
 plt.show()
+
+
+
+
+
 
 
 #We now want to see how many participants there were per edition
@@ -162,9 +191,12 @@ plt.show()
 #sns.set(rc={'figure.figsize':(18,12)})
 plot1 = sns.barplot('Year','ID',data=IDgroupedbyyear).set_xticklabels(IDgroupedbyyear.Year,rotation=45)
 #plot1.set(xlabel='YEAR',ylabel='Number of people')
-plt.xlabel("YEAR")
-plt.ylabel("PARTICIPANTS")
+plt.xlabel("Year")
+plt.ylabel("Participants")
 plt.show()
+
+
+
 
 
 
@@ -196,28 +228,62 @@ print("Median: " + str(med))
 #np_weight = np.array(weight)
 
 bmi = np_weight / np_height ** 2
-print (bmi)
+real_bmi = bmi * 10000
+print (real_bmi)
+
+light = real_bmi < 21
+print (light)
+
+
+
+
+#I would like to know the distribution of gold medals over the age
+gold_medals = total_data[(total_data.Medal == 'Gold')]
+gold_medals.head()
+plt.figure(figsize=(20, 10))
+plt.tight_layout()
+sns.countplot(gold_medals['Age'])
+plt.xticks(rotation=45)
+plt.title('Age distribution of Gold Medals')
+plt.show()
+
+
+
+print (gold_medals['Sport'][gold_medals['Age'] > 50])
+ancient_olympians = gold_medals['Sport'][gold_medals['Age'] > 50]
+
+plt.figure(figsize=(20, 10))
+plt.tight_layout()
+sns.countplot(ancient_olympians)
+
+plt.title('Gold Medals for Athletes Over 50')
+plt.show()
+
+
+
+
+
+
 
 
 
 
 #Using .nunique() to rank by distinct sports
 # Group medals by 'NOC': country_grouped
-countries = total_data.groupby('NOC')
+#countries = total_data.groupby('NOC')
 
 # Compute the number of distinct sports in which each country won medals: Nsports
-Newsports = countries['Sport'].nunique()
+#Newsports = countries['Sport'].nunique()
 
 # Sort the values of Nsports in descending order
-Newsports = Newsports.sort_values(ascending=False)
+#Newsports = Newsports.sort_values(ascending=False)
 
 # Print the top 15 rows of Nsports
-print(Newsports.head(15))
+#print(Newsports.head(15))
 
-sns.catplot(x=total_data.groupby('NOC'), data=Newsports, kind="count")
-plt.xlabel("Countries")
-plt.ylabel("Amount of sports won medals in")
-plt.show()
+
+
+
 
 
 #total_data.plot("Year", "Team")
@@ -243,7 +309,6 @@ plt.show()
 #print (olympics_data_medals.isna().any())
 #print(olympics_data_medals.shape)
 #print(olympics_data_medals.columns)
-
 
 #I found a way to mark the 18th row, and by going into the debugger, check how to see the code as a dataframe//
 #there we found that the row
