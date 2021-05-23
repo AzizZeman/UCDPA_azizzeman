@@ -82,20 +82,17 @@ print (None_as_percentage(total_data, ["Age"]))
 
 #we do the same for the 'Height'
 mean_height=total_data["Height"].mean()
-print ('the mean height is')
-print (mean_height)
+print (('the mean height is'),mean_height)
 #then we fill the mean height in the Height column for the values that are null
 total_data["Height"]=total_data["Height"].fillna(mean_height)
 total_data["Height"]
 #We check the values, see if the change is made
 print (total_data.isnull().sum())
 
+
 #we do the same for the 'Weight'
 mean_weight=total_data["Weight"].mean()
-print ('the mean weight is')
-print (mean_weight)
-
-
+print ('the mean weight is', mean_weight)
 
 #then we fill the mean weight in the Weight column for the values that are null
 total_data["Weight"]=total_data["Weight"].fillna(mean_weight)
@@ -136,15 +133,33 @@ print (data_gender.head())
 #data_gender.sum().plot(kind='bar')
 #plt.show()
 
-sns.catplot(x=total_data['Sex'], data=data_gender, kind="count")
+sns.catplot(x=total_data['Sex'], data=total_data, kind="count")
 plt.xlabel("Male and Female participation")
 plt.ylabel("Participants")
 plt.show()
 
 
 
+sns.catplot(x = total_data['Sex'],
+            y = "Height",
+            data = total_data,
+            kind = "box",
+            sym="")
+plt.show()
 
+sns.catplot(x = total_data['Sex'],
+            y = "Weight",
+            data = total_data,
+            kind = "box",
+            sym="")
+plt.show()
 
+sns.catplot(x = total_data['Sex'],
+            y = "Age",
+            data = total_data,
+            kind = "box",
+            sym="")
+plt.show()
 
 
 #Now we are going to see how many participants the Netherlands had in each Games
