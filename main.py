@@ -52,7 +52,6 @@ def None_as_percentage(total_data, column_name):
     return (100.0*empty_values)/rows_count
 for i in list(total_data):
     print(i +': ' + str(None_as_percentage(total_data,i))+'%')
-print ('en of trying new code out')
 
 #we would like an overview of missing values and show it in a bar-graph
 print (total_data.isna().any())
@@ -143,8 +142,6 @@ sns.catplot(x = total_data['Sex'],
             kind = "box",
             sym="")
 plt.show()
-
-
 
 #We now want to see how many participants there were per edition
 IDgroupedbyyear = total_data.groupby(['Year','ID'],as_index=False).count()[['Year','ID']]
