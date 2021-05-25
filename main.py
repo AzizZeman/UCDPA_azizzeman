@@ -114,48 +114,55 @@ print (type(total_data))
 #We go on to grouping by Sex and see how many participants each Sex had
 data_gender=total_data['Sex'].value_counts()
 print (data_gender.head())
-sns.catplot(x=total_data['Sex'], data=total_data, kind="count")
+g = sns.catplot(x=total_data['Sex'], data=total_data, kind="count")
 plt.xlabel("Male and Female participation")
 plt.ylabel("Participants")
 plt.show()
 
 #We checked the distribution across Sex for Height
-sns.catplot(x = total_data['Sex'],
+sns.set_style('whitegrid')
+g = sns.catplot(x = total_data['Sex'],
             y = "Height",
             data = total_data,
             kind = "box",
             sym="")
+g.fig.suptitle('Boxplot of Male and Female height in Olympics history', y=1.00)
 plt.show()
 
 #We checked the distribution across Sex for Weight
-sns.catplot(x = total_data['Sex'],
+g = sns.catplot(x = total_data['Sex'],
             y = "Weight",
             data = total_data,
             kind = "box",
             sym="")
+g.fig.suptitle('Boxplot of Male and Female weight in Olympics history', y=1.00)
 plt.show()
 
 #And finally we checked the distribution across Sex for Age
-sns.catplot(x = total_data['Sex'],
+g = sns.catplot(x = total_data['Sex'],
             y = "Age",
             data = total_data,
             kind = "box",
             sym="")
+g.fig.suptitle('Boxplot of Male and Female Ages in Olympics history', y=1.00)
 plt.show()
 
 #We now want to see how many participants there were per edition
 IDgroupedbyyear = total_data.groupby(['Year','ID'],as_index=False).count()[['Year','ID']]
 IDgroupedbyyear = IDgroupedbyyear.groupby('Year',as_index=False).count()
-IDgroupedbyyear.head()
+print (IDgroupedbyyear.head())
 
 #Now let's get the sum
 IDgroupedbyyear = IDgroupedbyyear.groupby('Year',as_index=False).sum()
 
 #And show it as a plot
+sns.set_context("paper")
 sns.set(rc={'figure.figsize':(14,8)})
-sns.catplot(x="Year", y="ID",
+g=sns.catplot(x="Year", y="ID",
             data=IDgroupedbyyear, kind="bar")
-plt.xticks(rotation=45)
+g.fig.suptitle("Participants per event", y=1.00)
+plt.ylabel("Participants")
+plt.xticks(rotation=90)
 plt.show()
 
 #I wanted to do it in another way
@@ -181,8 +188,8 @@ ancient_olympians = gold_medals['Sport'][gold_medals['Age'] > 50]
 
 plt.figure(figsize=(14, 8))
 plt.tight_layout()
-sns.countplot(ancient_olympians)
-plt.title('Gold Medals for Athletes Over 50')
+sns.countplot(ancient_olympians, order = ancient_olympians.value_counts().index)
+plt.title('Sports with Gold Medals for athletes over 50')
 plt.show()
 
 
@@ -212,7 +219,7 @@ real_bmi = bmi * 10000
 print (real_bmi)
 print (type(real_bmi))
 
-light = real_bmi < 21
+light = real_bmi < 18
 print (light)
 
 #real_bmi is a numpy.ndarray, and I want to convert this to a list
@@ -223,4 +230,16 @@ print (type(list_bmi))
 
 
 
+def column_BMI (total_data, column_name):
+    np_height = total_data['Height'].to_numpy()
+    np_weight = total_data['Weight'].to_numpy()
+    bmi = np_weight / np_height ** 2
+    return (10000.0 * bmi)
+
+#total_data['BMI']=total_data['BMI'].apply(column_BMI(total_data, BMI))
+
+for lab, row in total_data.iterrows() :
+    total_data.loc[lab, "BMI"] = row(total_data, column_name="BMI")
+print(total_data.columns)
+print(total_data.head)
 
