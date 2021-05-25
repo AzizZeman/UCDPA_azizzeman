@@ -45,7 +45,12 @@ duplicate_rows2 = total_data[total_data.duplicated()]
 print (duplicate_rows2)
 print (duplicate_rows2.shape)
 
-#making a function to measure the percentage of NaN values
+#we would like an overview of missing values and show it in a bar-graph
+print (total_data.isna().any())
+total_data.isna().sum().plot(kind='bar')
+plt.show()
+
+#making a function to measure the percentage of NaN values and looping
 def None_as_percentage(total_data, column_name):
     rows_count = total_data[column_name].shape[0]
     empty_values = rows_count - total_data[column_name].count()
@@ -53,19 +58,14 @@ def None_as_percentage(total_data, column_name):
 for i in list(total_data):
     print(i +': ' + str(None_as_percentage(total_data,i))+'%')
 
-#we would like an overview of missing values and show it in a bar-graph
-print (total_data.isna().any())
-total_data.isna().sum().plot(kind='bar')
-plt.show()
-
 #We can see we have missing values in Age, Height, Weight and Medal. Need to clean these if we are going to use them
-#First we calculate the mean age
+#First we calculate the mean and  median age
 mean_age=total_data["Age"].mean()
 print (('the mean age is:'), mean_age)
 median_age=total_data["Age"].median()
 print (('the median age is:'), median_age)
 
-#then we fill the mean age in the Age column for the values that are null
+#then we fill the median age in the Age column for the values that are null
 total_data["Age"]=total_data["Age"].fillna(median_age)
 
 #We check the values, see if the change is made
@@ -80,7 +80,6 @@ total_data["Height"]=total_data["Height"].fillna(mean_height)
 total_data["Height"]
 #We check the values, see if the change is made
 print (total_data.isnull().sum())
-
 
 #we do the same for the 'Weight'
 mean_weight=total_data["Weight"].mean()
@@ -108,7 +107,6 @@ plt.show()
 print (total_data.head)
 print(total_data.columns)
 print (type(total_data))
-
 
 
 #We go on to grouping by Sex and see how many participants each Sex had
@@ -166,19 +164,17 @@ plt.xticks(rotation=90)
 plt.show()
 
 #I wanted to do it in another way
-#sns.set(rc={'figure.figsize':(14,8)})
-winners_by_age = sns.barplot('Year','ID',data=IDgroupedbyyear).set_xticklabels(IDgroupedbyyear.Year,rotation=45)
+winners_by_age = sns.barplot(x='Year',y='ID',data=IDgroupedbyyear).set_xticklabels(IDgroupedbyyear.Year,rotation=45)
 plt.xlabel("Year")
 plt.ylabel("Participants")
 plt.show()
-
 
 #I would like to know the distribution of gold medals over the age
 gold_medals = total_data[(total_data.Medal == 'Gold')]
 gold_medals.head()
 plt.figure(figsize=(14, 8))
 plt.tight_layout()
-sns.countplot(gold_medals['Age'])
+sns.countplot(x=gold_medals['Age'])
 plt.xticks(rotation=45)
 plt.title('Age distribution of Gold Medals')
 plt.show()
@@ -188,31 +184,24 @@ ancient_olympians = gold_medals['Sport'][gold_medals['Age'] > 50]
 
 plt.figure(figsize=(14, 8))
 plt.tight_layout()
-sns.countplot(ancient_olympians, order = ancient_olympians.value_counts().index)
+sns.countplot(x=ancient_olympians, order = ancient_olympians.value_counts().index)
 plt.title('Sports with Gold Medals for athletes over 50')
 plt.show()
 
-
-
 #Changing to numpy array
-
 np_height = total_data['Height'].to_numpy()
 print(type(np_height))
-print(np.mean(np_height))
-print (np.median(np_height))
-avg = np.mean(np_height)
-print("Average: " + str(avg))
-med = np.median(np_height)
-print("Median: " + str(med))
+avg_height = np.mean(np_height)
+print("Average: " + str(avg_height) + ' cm')
+med_height = np.median(np_height)
+print("Median: " + str(med_height)+ ' cm')
 
 np_weight = total_data['Weight'].to_numpy()
 print(type(np_weight))
-print(np.mean(np_weight))
-print (np.median(np_weight))
-avg = np.mean(np_weight)
-print("Average: " + str(avg))
-med = np.median(np_weight)
-print("Median: " + str(med))
+avg_weight = np.mean(np_weight)
+print("Average: " + str(avg_weight) + ' kg')
+med_weight = np.median(np_weight)
+print("Median: " + str(med_weight) + ' kg')
 
 bmi = np_weight / np_height ** 2
 real_bmi = bmi * 10000
@@ -225,21 +214,3 @@ print (light)
 #real_bmi is a numpy.ndarray, and I want to convert this to a list
 list_bmi = np.array([real_bmi]).tolist()
 print (type(list_bmi))
-
-
-
-
-
-def column_BMI (total_data, column_name):
-    np_height = total_data['Height'].to_numpy()
-    np_weight = total_data['Weight'].to_numpy()
-    bmi = np_weight / np_height ** 2
-    return (10000.0 * bmi)
-
-#total_data['BMI']=total_data['BMI'].apply(column_BMI(total_data, BMI))
-
-for lab, row in total_data.iterrows() :
-    total_data.loc[lab, "BMI"] = row(total_data, column_name="BMI")
-print(total_data.columns)
-print(total_data.head)
-
